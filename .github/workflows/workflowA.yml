@@ -1,0 +1,32 @@
+name: Workflow A
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Other build steps...
+
+      - name: Trigger Workflow B
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.PRAKASH_TOKEN }}
+          script: |
+            const { data: workflow } = await github.actions.createWorkflowDispatch({
+              owner: 'prakashveni1',
+              repo: 'workflow',
+              workflow_id: 'workflow-b.yaml',
+              ref: 'main',
+              inputs: {
+                some_input: 'example value'
+              }
+            });
+            console.log(`Workflow B triggered. Run ID: ${workflow.id}`);
